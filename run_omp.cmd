@@ -5,7 +5,8 @@
 #SBATCH --error=/home/lv72/lv72805/Analysis/output/J3C1_145/mpi_%j.err                                                                                                            
 #SBATCH --ntasks=$4                                                                                                                 
 #SBATCH --cpus-per-task=$5                                                                                                           
-#SBATCH --tasks-per-node=$6                                                                                                         
+#SBATCH --tasks-per-node=$6 
+#SBATCH --qos=thin_astro                                                                                                        
 #SBATCH --time=48:00:00                                                                                               
 
 outRoot="/storage/scratch/lv72/lv72805/BSC/J3C1_145/out/"
@@ -25,6 +26,10 @@ export PATH=/storage/apps/HDF5/gcc/1.8.20/bin:$PATH
 
 module load hdf5/1.14.1-2_ompi_gcc13.2 hwloc/2.7.1
 export OMP_NUM_THREADS=$5
+
+# Compile the code
+make clean
+make
 
 #date 
 time /usr/bin/srun ./RATPENAT $outRoot $path_wkd $1 $2 $3 > ${path_output}/out_${SLURM_JOB_ID}_$4_$5.dat
