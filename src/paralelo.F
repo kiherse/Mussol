@@ -1,11 +1,25 @@
 !===============================================================================
-! NAME omp_init
-! F90 SPECIFICATION
-! ARGUMENTS
-! GLOBAL VARIABLES omp_th
-! DESCRIPTION sets the number of threads in omp_th from OMP_NUM_TRHEADS environment variable
-! SEE ALSO
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: PARALELO --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
 !===============================================================================
+
 subroutine omp_init
      use workarrays
      implicit none

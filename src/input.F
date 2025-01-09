@@ -1,16 +1,30 @@
 !===============================================================================
-!     NAME
-!     F90 SPECIFICATION
-!     ARGUMENTS
-!     GLOBAL Variables
-!     DESCRIPTION
-!     SEE ALSO
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: PARALELO --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
 !     This subroutine reads the initial parameters.
 !     Adapted from Prometheus.
 !     MODIFIED 16-JUL-1993 to include test 'RCSR'
 !     MODIFIED 15-JUL-1994 to include test 'REFS' 
 !     MODIFIED 07-MAY-1998 to change input format specifiers
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
 !===============================================================================
+
       subroutine input( suffix, suffixd, basenm, rst_file, rst_rec,  &
       nend, irstrt, nrstrt, nout, itstp, iapprs,        &
       irk, igodu, niter, nsdim, ixsym, izsym,           &

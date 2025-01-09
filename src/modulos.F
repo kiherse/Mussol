@@ -1,13 +1,27 @@
 #include "types.h"
 
 !===============================================================================
-! NAME
-! F90 SPECIFICATION
-! ARGUMENTS
-! GLOBAL VARIABLES
-! DESCRIPTION
-! SEE ALSO
-!===============================================================================s
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: MÓDULOS --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
+!===============================================================================
+
 MODULE constantes
   real(rs), parameter :: pi = 3.14159265358979323844
 END MODULE constantes
@@ -119,6 +133,7 @@ MODULE workarrays
   ! command line arguments
   character(len=256) :: outRoot
   character(len=256) :: path_wkd
+  character(len=256) :: path_output
 
 # ifdef OPENMP
   integer, parameter :: MAXTHREADS = 16

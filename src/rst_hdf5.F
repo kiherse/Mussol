@@ -1,7 +1,24 @@
-!     
-!     rst_hdf5.f
-!     restart from a HDF5 snapshot
-!     
+!===============================================================================
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: RESTART HDF5 --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
+!===============================================================================
 
 #ifdef HDF
 

@@ -1,7 +1,30 @@
+!===============================================================================
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: MAIN PROGRAM --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
+!       MAIN PROGRAM: Analysis and post-processing of RATPENAT hdf5 outputs.
+!                     HYBRID OMP+MPI PARALLELIZATION.
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
+!===============================================================================
+
       Program MUSSOL
 
 ! Including external modules and libraries 
-
       USE tipos
       USE memoria
       USE parallel
@@ -151,9 +174,9 @@
 !--------------------------------------------------------------------------BEGIN
       
       ! Constants
-      pc = 1 / 3.24254215e-19   
-      me_cgs = 9.1095e-28
-      c = 2.99792458e10
+      pc = 1 / 3.24254215e-19  ! Parsec in cm
+      me_cgs = 9.1095e-28 ! Electron mass in g
+      c = 2.99792458e10 ! Speed of light in cm/s
       kb = 1.38066e-16
       mp_cgs = 1836.11 * me_cgs
       KB1 = 7.5e20
@@ -161,6 +184,8 @@
       kb= 1.38066e-16
       meff= 1.0/9.1095e-28 * 2.0/1836.11
       KB1=KB1*mp_cgs**2/1.22
+
+      csa=2.3e-3 ! Speed of sound
 
       ! Parameters
       pi = acos(-1.0)      
@@ -175,21 +200,23 @@
       ! Process the command line
       outRoot =''
       path_wkd =''
+      path_output =''
       numArgs = command_argument_count()
 
       call get_command_argument(0, program_name)
-      if (numArgs.ne.5) then
+      if (numArgs.ne.6) then
          print*, 'Usage: ', TRIM(program_name), &
          'OutRoot, Working-Path xCPUS yCPUS zCPUS'
          STOP ' '
       endif
       call get_command_argument(1, outRoot)
       call get_command_argument(2, path_wkd)
-      call get_command_argument(3, tmpstr)
-      read(tmpstr, *) xCPUs
+      call get_command_argument(3, path_output)
       call get_command_argument(4, tmpstr)
-      read(tmpstr, *) yCPUs
+      read(tmpstr, *) xCPUs
       call get_command_argument(5, tmpstr)
+      read(tmpstr, *) yCPUs
+      call get_command_argument(6, tmpstr)
       read(tmpstr, *) zCPUs
 
       nodes = xCPUs*yCPUs*zCPUs
@@ -286,7 +313,7 @@
 #ifdef HDF
       call rrhdf5_init(H_openr, H_opend)
 #endif  
-      
+       
       ! Nodes grid points
       imin  = mpi_coords(1) * nx       
       jmin  = mpi_coords(2) * ny       
@@ -299,10 +326,14 @@
          print*,''
       endif
 
+      ! ! Nodes mpi coordinates
+      ! if (cartrank==0) print*,'Node, mpi_coords: '
+      ! print*,cartrank, mpi_coords(1), mpi_coords(2), mpi_coords(3)
 
       DO szi = 1, sz
 
          if (cartrank == 0) then
+            print*,''
             print*,'======================================= ',rst_file,' ======================================'
             print*,''
          endif
@@ -447,7 +478,6 @@
          ! velx, vely, velz := Velocities
          ! tracer := Jet particles tracer
 
-         ! MUSSOL VARIABLES DICTIONARY
          ! xe := Leptonic fraction
          ! tem := Temperature
          ! ze := Electron mass relative to temperature
@@ -491,10 +521,10 @@
 
                   physic(ii,jj,kk)%densty=physic(ii,jj,kk)%densty*rho_0a
                   physic(ii,jj,kk)%denstye=physic(ii,jj,kk)%denstye*rho_0a
-                  physic(ii,jj,kk)%pres=physic(ii,jj,kk)%pres*9.e20*rho_0a
+                  physic(ii,jj,kk)%pres=physic(ii,jj,kk)%pres*(c**2)*rho_0a
                   tem(ii,jj,kk)=physic(ii,jj,kk)%pres/(xe/me_cgs+(1-xe)/mp_cgs)/ &
                         (kb*physic(ii,jj,kk)%densty)
-                  physic(ii,jj,kk)%pres=physic(ii,jj,kk)%pres/9.e20/rho_0a
+                  physic(ii,jj,kk)%pres=physic(ii,jj,kk)%pres/(c**2)/rho_0a
                   physic(ii,jj,kk)%densty=physic(ii,jj,kk)%densty/rho_0a
                   physic(ii,jj,kk)%denstye=physic(ii,jj,kk)%denstye/rho_0a
                   
@@ -544,7 +574,7 @@
                en_inj(szi) = en_inj(szi) + en_inja(ii)
             enddo
       
-            en_inj(szi) = en_inj(szi)*rho_0a*9.e20*3.1e20*3.1e20*3.e10
+            en_inj(szi) = en_inj(szi)*rho_0a*(c**2)*3.1e20*3.1e20*3.e10
              
             print*,'Total energy injected at this time (en_inj)',en_inj(szi),'in szi', szi
             print*,''
@@ -568,6 +598,9 @@
          yzn(ny+1) = yzn(ny) + (yzn(2)-yzn(1))
          zzn(nz+1) = zzn(nz) + (zzn(2)-zzn(1))
 
+         ! print*, cartrank, xzn(1),xzn(nx), yzn(1), yzn(ny), zzn(1), zzn(nz)
+         ! STOP
+
          shposi= 0. 
          shpostx = 0.
          phi = 0.
@@ -578,9 +611,7 @@
             .or. abs(physic(nx,1,nz)%vely) > 1.e-4) &
             .and. ((abs(physic(1,ny,1)%vely) < 1.e-4 .and. abs(physic(nx,ny,1)%vely) < 1.e-4 .and. &
             abs(physic(1,ny,nz)%vely) < 1.e-4 .and. abs(physic(nx/2,ny,nz/2)%vely) < 1.e-4 &
-            .and. abs(physic(nx,ny,nz)%vely) < 1.e-4 )) &
-               .or. mpi_coords(2) == mpi_dims(2) -1 &
-            ) then 
+            .and. abs(physic(nx,ny,nz)%vely) < 1.e-4 )) .or. mpi_coords(2) == mpi_dims(2) -1 ) then 
 
 !$OMP PARALLEL DEFAULT(shared)&
 !$OMP PRIVATE(ii,jj,kk,ll,mm,qq,vel,ratio)
@@ -590,28 +621,38 @@
             do kk=1,nz
                do ii=1,nx
 
-                  ! Half of the node in the jet direction propagation
-                  jj=ny-2 
+                  ! End of the grid in the jet direction (minus 2)
+                  jj=ny-2
 
-                  shposa(ii,kk)=0.
+                  shposa(ii,kk) = 0 !yzn(ny)
                   phia(ii,kk) = 0.
 
-                  ! Searching for the pressure drop of the shock
-                  do while (jj > 2 .and. (abs(physic(ii,jj-2,kk)%pres-physic(ii,jj+2,kk)%pres)/physic(ii,jj+2,kk)%pres < 1.))
+                  ! Searching for the shock
+                  do while (jj > 2)
 
+                     ! print*, abs(physic(ii,jj-7,kk)%pres-physic(ii,jj+7,kk)%pres)/physic(ii,jj+7,kk)%pres
+                     
+                     if (abs(physic(ii,jj-2,kk)%pres-physic(ii,jj+2,kk)%pres)/physic(ii,jj+2,kk)%pres>0.2) then
+                       
                         shposa(ii,kk)=yzn(jj)
 
-                        if (jj > 7) then
+                        if (jj > 2) then
                            phia(ii,kk) =  physic(ii,jj-6,kk)%pres
                         else
                            phia(ii,kk) =  physic(ii,1,kk)%pres
                         endif
 
+                        jj = 2
+
+                     else
                         jj = jj - 1
+
+                     endif
 
                   enddo
                enddo
             enddo
+
 !$OMP END DO
 !$OMP END PARALLEL
 
@@ -630,11 +671,9 @@
                enddo
             enddo
 
-              print*,cartrank,shposi,phi
-
          endif
 
-         ! Shock in the perpendicular x-direction for every y,z
+         ! Shock in the perpendicular x-direction
          if (mpi_coords(1) >= mpi_dims(1)/2 ) then
 !$OMP PARALLEL DEFAULT(shared)&
 !$OMP PRIVATE(ii,jj,kk,ratio)
@@ -643,15 +682,14 @@
             do kk=1,nz
                do jj=1,ny
                   ii=nx-2
-                  shpost(jj,kk)=xzn(nx)
-                  do while (ii > 2 .and. (abs(physic(ii-2,jj,kk)%pres-physic(ii+2,jj,kk)%pres)/physic(ii+2,jj,kk)%pres < 2.))
-                     if (abs(xzn(ii)) < abs(shpost(jj,kk))) then
+                  shpost(jj,kk)=0.
+                  do while (ii > 2)
+                     if (abs(physic(ii-2,jj,kk)%pres-physic(ii+2,jj,kk)%pres)/physic(ii+2,jj,kk)%pres>0.2) then
                         shpost(jj,kk)=xzn(ii)
+                        ii = 2
+                     else
+                        ii = ii - 1
                      endif
-                     if (ii == 3 .and. shpost(jj,kk) == xzn(ii)) then
-                        shpost(jj,kk) = 0.
-                     endif
-                     ii = ii - 1
                   enddo
                enddo
             enddo
@@ -660,7 +698,7 @@
 !$OMP END PARALLEL
 
             ! Shock in the perpendicular x-direction
-            shpostx=abs(shpost(1,1))
+            shpostx=0.0
             do kk=1, nz
                do jj=1,ny
                   if (abs(shpost(jj,kk)) > shpostx) then
@@ -677,23 +715,22 @@
 !$OMP DO SCHEDULE(static)
             do kk=1,nz
                do jj=1,ny
-                  ii=3
-                  shpost(jj,kk)=xzn(1)
-                  do while (ii < nx-2 .and. (abs(physic(ii+2,jj,kk)%pres-physic(ii-2,jj,kk)%pres)/physic(ii-2,jj,kk)%pres < 4.))
-                     if (abs(xzn(ii)) < abs(shpost(jj,kk))) then
+                  ii=4
+                  shpost(jj,kk)=0.
+                  do while (ii < nx-2)
+                     if (abs(physic(ii+2,jj,kk)%pres-physic(ii-2,jj,kk)%pres)/physic(ii-2,jj,kk)%pres>0.2) then
                         shpost(jj,kk)=xzn(ii)
+                        ii = nx - 2
+                     else
+                        ii = ii + 1
                      endif
-                     if (ii == nx-3 .and. shpost(jj,kk) == xzn(ii)) then
-                        shpost(jj,kk) = 0.
-                     endif
-                     ii = ii + 1
                   enddo
                enddo
             enddo
 !$OMP END DO
 !$OMP END PARALLEL
 
-            shpostx=abs(shpost(1,1))
+            shpostx=0.0
             do kk=1, nz
                do jj=1,ny
                   if (abs(shpost(jj,kk)) > abs(shpostx)) then
@@ -706,7 +743,6 @@
          call MPI_BARRIER( MPI_COMM_WORLD, ierr )
 
          !------------------------------------------------------------------- COMPUTING MASSES AND ...
-
 
          ! MUSSOL VARIABLES DICTIONARY
          ! countp := Number of shocked cells
@@ -760,6 +796,10 @@
 
                do ii=1,nx+1
 
+                  !!!!!!
+                  ! FIX THIS DEPENDENCY WITH mm1 AND mm2  and rm and tem, tem1 etc
+                  ! FOR THE INITIAL PROFILE OF THE ENVIRONMENT
+
                   ri = sqrt(xzn(ii)**2 + yzn(jj)**2 + zzn(kk)**2) 
                   rhoa2(ii) = 1./(1.+(ri/psh1)**nn)**(mm1/nn)  &     
                         + fg/(1.+(ri/psh2)**nn)**(mm2/nn)
@@ -775,7 +815,7 @@
                   presa2(ii)=tema(ii)*(xe/me_cgs+(1.0-xe)/mp_cgs)* &
                         (rhoa2(ii)*kb*rho_0a)    
 
-                  temi=tema(ii)*kb/m_0/9.e20 
+                  temi=tema(ii)*kb/m_0/(c**2) 
                   ze = me / temi
                   zp = mp / temi
          
@@ -794,7 +834,7 @@
                   xe=physic(ii,jj,kk)%denstye/physic(ii,jj,kk)%densty
                   np = (xe/me_cgs+(1.0-xe)/mp_cgs)*(physic(ii,jj,kk)%densty*rho_0a)
                   npa = (xea/me_cgs+(1.0-xea)/mp_cgs)*(rhoa2(ii)*rho_0a)
-                  presa2(ii) = presa2(ii)/9.e20/rho_0a
+                  presa2(ii) = presa2(ii)/(c**2)/rho_0a
 
                   ! Initialize x-direction array of variables
                   intarrayx(ii)%massa = 0.0
@@ -896,31 +936,31 @@
                         intarrayx(ii)%enintcoi =  physic(ii,jj,kk)%densty*rho_0a*     &
                               physic(ii,jj,kk)%eps*                             &
                               (1.-physic(ii,jj,kk)%tracer)*                     &
-                              dvol*9.e20 - rhoa2(ii)*rho_0a*epsa2(ii)*          &
-                              dvol*9.e20 + 0.5*physic(ii,jj,kk)%densty*rho_0a*  &
+                              dvol*(c**2) - rhoa2(ii)*rho_0a*epsa2(ii)*          &
+                              dvol*(c**2) + 0.5*physic(ii,jj,kk)%densty*rho_0a*  &
                               (physic(ii,jj,kk)%vely**2+                        &
                               physic(ii,jj,kk)%velx**2+                        &
-                              physic(ii,jj,kk)%velz**2)*9.e20*                 &
+                              physic(ii,jj,kk)%velz**2)*(c**2)*                 &
                               (1.-physic(ii,jj,kk)%tracer)   
 
                         intarrayx(ii)%massacoi = physic(ii,jj,kk)%densty*rho_0a   &
                                           *(1.-physic(ii,jj,kk)%tracer)*dvol
                         intarrayx(ii)%npcoi = 2.*(1.-xe)*intarrayx(ii)%npti ! Leptonic jet: the number of ambient particles is twice (account for ambient electrons) the baryonic number
-                        intarrayx(ii)%pdvcoi = physic(ii,jj,kk)%pres*dvol*rho_0a*9.e20
+                        intarrayx(ii)%pdvcoi = physic(ii,jj,kk)%pres*dvol*rho_0a*(c**2)
                         
                         intarrayx(ii)%entpt = (tem(ii,jj,kk)/np**0.6667*np-          &
                            tema(ii)/npa**0.6667*npa)*dvol !-tema(ir)/npa^0.6667
 
                         if (dispco(ii,jj,kk) .eq. 0) then
                            dispco(ii,jj,kk) = 1
-                           intarrayx(ii)%pdva2i = physic(ii,jj,kk)%pres*dvol*rho_0a*9.e20* &
+                           intarrayx(ii)%pdva2i = physic(ii,jj,kk)%pres*dvol*rho_0a*(c**2)* &
                                  physic(ii,jj,kk)%tracer
                            intarrayx(ii)%entcoi =  physic(ii,jj,kk)%densty*rho_0a*        &
-                              physic(ii,jj,kk)%eps*physic(ii,jj,kk)%tracer*dvol*9.e20 +   &
+                              physic(ii,jj,kk)%eps*physic(ii,jj,kk)%tracer*dvol*(c**2) +   &
                                  0.5*physic(ii,jj,kk)%densty*rho_0a*                &
                                  (physic(ii,jj,kk)%vely**2+                         &
                                  physic(ii,jj,kk)%velx**2+                         &
-                                 physic(ii,jj,kk)%velz)*9.e20*                     &
+                                 physic(ii,jj,kk)%velz)*(c**2)*                     &
                                  physic(ii,jj,kk)%tracer*dvol      
                            intarrayx(ii)%mass2  = rhoa2(ii)*rho_0a*dvol
 
@@ -951,59 +991,61 @@
                      intarrayx(ii)%eninta = physic(ii,jj,kk)%densty*rho_0a*        &
                            physic(ii,jj,kk)%eps*                             &
                            (1.-physic(ii,jj,kk)%tracer)*                     &
-                           dvol*9.e20 - rhoa2(ii)*rho_0a*epsa2(ii)*          &
-                           dvol*9.e20
+                           dvol*(c**2) - rhoa2(ii)*rho_0a*epsa2(ii)*          &
+                           dvol*(c**2)
 
-                     intarrayx(ii)%eninta0 = rhoa2(ii)*epsa2(ii)*dvol*9.e20*rho_0a
+                     intarrayx(ii)%eninta0 = rhoa2(ii)*epsa2(ii)*dvol*(c**2)*rho_0a
 
                      intarrayx(ii)%enkina = 0.5*physic(ii,jj,kk)%densty*rho_0a*    &
                            (physic(ii,jj,kk)%vely**2+                        &
                            physic(ii,jj,kk)%velx**2+                        &
-                           physic(ii,jj,kk)%velz**2)*9.e20*                 &
+                           physic(ii,jj,kk)%velz**2)*(c**2)*                 &
                            (1.-physic(ii,jj,kk)%tracer)*dvol
 
                      intarrayx(ii)%enintj = physic(ii,jj,kk)%densty*rho_0a* & 
                                        physic(ii,jj,kk)%eps*                  &
-                                       physic(ii,jj,kk)%tracer*dvol*9.e20
+                                       physic(ii,jj,kk)%tracer*dvol*(c**2)
 
                      intarrayx(ii)%enkinj = 0.5*physic(ii,jj,kk)%densty*rho_0a*   &
                            (physic(ii,jj,kk)%vely**2+                              &
                            physic(ii,jj,kk)%velx**2+                              &
                            physic(ii,jj,kk)%velz**2)                              &
-                           *physic(ii,jj,kk)%tracer*dvol*9.e20
+                           *physic(ii,jj,kk)%tracer*dvol*(c**2)
 
                      intarrayx(ii)%tauji = (physic(ii,jj,kk)%densty*(lof(ii,jj,kk)**2)*  &
                            hr(ii,jj,kk)-physic(ii,jj,kk)%pres)*                  &
-                           dvol*physic(ii,jj,kk)%tracer*rho_0a*9.e20             
+                           dvol*physic(ii,jj,kk)%tracer*rho_0a*(c**2)             
 
                      intarrayx(ii)%tauai = (physic(ii,jj,kk)%densty*(lof(ii,jj,kk)**2)  &
                            *hr(ii,jj,kk)-physic(ii,jj,kk)%pres)*dvol *           &
-                           (1.-physic(ii,jj,kk)%tracer)*rho_0a*9.e20 -           &
-                           rhoa2(ii)*(1.+epsa2(ii))*rho_0a*dvol*9.e20
+                           (1.-physic(ii,jj,kk)%tracer)*rho_0a*(c**2) -           &
+                           rhoa2(ii)*(1.+epsa2(ii))*rho_0a*dvol*(c**2)
 
-                     intarrayx(ii)%taua0i = rhoa2(ii)*rho_0a*(1.+epsa2(ii))*9.e20*dvol
+                     intarrayx(ii)%taua0i = rhoa2(ii)*rho_0a*(1.+epsa2(ii))*(c**2)*dvol
 
                      intarrayx(ii)%tauj_di = (physic(ii,jj,kk)%densty*(lof(ii,jj,kk)**2)* &
                            hr(ii,jj,kk)-physic(ii,jj,kk)%pres)*                    &
-                           dvol*physic(ii,jj,kk)%tracer*rho_0a*9.e20 -             &
-                           physic(ii,jj,kk)%densty*lof(ii,jj,kk)*9.e20*            &
+                           dvol*physic(ii,jj,kk)%tracer*rho_0a*(c**2) -             &
+                           physic(ii,jj,kk)%densty*lof(ii,jj,kk)*(c**2)*            &
                            physic(ii,jj,kk)%tracer*dvol*rho_0a 
 
                      intarrayx(ii)%taua_di = (physic(ii,jj,kk)%densty*lof(ii,jj,kk)**2* &
                            hr(ii,jj,kk)-physic(ii,jj,kk)%pres)*dvol*              &
-                           (1.-physic(ii,jj,kk)%tracer)*rho_0a*9.e20 -            &
-                           physic(ii,jj,kk)%densty*lof(ii,jj,kk)*9.e20*           &
+                           (1.-physic(ii,jj,kk)%tracer)*rho_0a*(c**2) -            &
+                           physic(ii,jj,kk)%densty*lof(ii,jj,kk)*(c**2)*           &
                            (1.-physic(ii,jj,kk)%tracer)*dvol*rho_0a -             &
-                           rhoa2(ii)*rho_0a*epsa2(ii)*9.e20*dvol
+                           rhoa2(ii)*rho_0a*epsa2(ii)*(c**2)*dvol
 
-                     intarrayx(ii)%taua0_di = rhoa2(ii)*rho_0a*epsa2(ii)*9.e20*dvol
+                     intarrayx(ii)%taua0_di = rhoa2(ii)*rho_0a*epsa2(ii)*(c**2)*dvol
 
                      intarrayx(ii)%tauti = (physic(ii,jj,kk)%densty*(lof(ii,jj,kk)**2)*    &
                            hr(ii,jj,kk)-physic(ii,jj,kk)%pres)*dvol*                        &
-                           rho_0a*9.e20 - rhoa2(ii)*rho_0a*(1.+epsa2(ii))*9.e20*dvol
+                           rho_0a*(c**2) - rhoa2(ii)*rho_0a*(1.+epsa2(ii))*(c**2)*dvol
 
                      counti = counti + 1 ! Counting cells in the x-direction
 
+                     !!!!!!
+                     ! WHAT ABOUT VARIABLES KB1 AND KB2?
                      if (szi .gt. 1) then
                         intarrayx(ii)%lxt = ((physic(ii,jj,kk)%densty*rho_0a)**2)/  &
                               (me_cgs*xe+mp_cgs*(1.0-xe))**2                       &
@@ -1018,7 +1060,7 @@
                                     
                      if (disp(ii,jj,kk) .eq. 0) then
                         disp(ii,jj,kk) = 1
-                        intarrayx(ii)%pdva = physic(ii,jj,kk)%pres*dvol*rho_0a*9.e20
+                        intarrayx(ii)%pdva = physic(ii,jj,kk)%pres*dvol*rho_0a*(c**2)
                         intarrayx(ii)%mdva = rhoa2(ii)*rho_0a*dvol
                      else
                         intarrayx(ii)%pdva = 0.
@@ -1269,7 +1311,8 @@
                      shpos(szi) = shposg(jj)
                   endif
                endif
-               
+
+               ! Computation of the total quantities
                arrayw(szi)%massj = arrayw(szi)%massj+arrayg(jj)%massj
                arrayw(szi)%massa = arrayw(szi)%massa+arrayg(jj)%massa
                arrayw(szi)%massat = arrayw(szi)%massat+arrayg(jj)%massat
@@ -1329,45 +1372,46 @@
 
             mass_ent(szi)  = arrayw(szi)%massa + arrayw(szi)%massac
 
+           ! Convert the quantities to cgs units
             arrayw(szi)%vol = arrayw(szi)%volsi+arrayw(szi)%volcoi
             arrayw(szi)%entp = arrayw(szi)%entp/arrayw(szi)%vol
             arrayw(szi)%entpa = arrayw(szi)%entpa/arrayw(szi)%vol
-            arrayw(szi)%massj = arrayw(szi)%massj*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%massa = arrayw(szi)%massa*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%massat = arrayw(szi)%massat*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%npti = arrayw(szi)%npti*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%press_s = arrayw(szi)%press_s*9.e20*rho_0a
+            arrayw(szi)%massj = arrayw(szi)%massj*R_b**3
+            arrayw(szi)%massa = arrayw(szi)%massa*R_b**3
+            arrayw(szi)%massat = arrayw(szi)%massat*R_b**3
+            arrayw(szi)%npti = arrayw(szi)%npti*R_b**3
+            arrayw(szi)%press_s = arrayw(szi)%press_s*(c**2)*rho_0a
             arrayw(szi)%rho_s = arrayw(szi)%rho_s*rho_0a
-            arrayw(szi)%press_co = arrayw(szi)%press_co*9.e20*rho_0a
+            arrayw(szi)%press_co = arrayw(szi)%press_co*(c**2)*rho_0a
             arrayw(szi)%rho_co =  arrayw(szi)%rho_co*rho_0a
-            arrayw(szi)%epsci = arrayw(szi)%epsci*9.e20
-            arrayw(szi)%volsi =  arrayw(szi)%volsi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%massac = arrayw(szi)%massac*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%volcoi = arrayw(szi)%volcoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%enintcoi = arrayw(szi)%enintcoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%massacoi = arrayw(szi)%massacoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%npcoi = arrayw(szi)%npcoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%pdvcoi = arrayw(szi)%pdvcoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%entcoi = arrayw(szi)%entcoi*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%pdva2i = arrayw(szi)%pdva2i*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%mass2 = arrayw(szi)%mass2*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%entpt = arrayw(szi)%entpt*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%epota = arrayw(szi)%epota*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%eninta = arrayw(szi)%eninta*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%eninta0 = arrayw(szi)%eninta0*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%enkina = arrayw(szi)%enkina*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%enintj = arrayw(szi)%enintj*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%enkinj = arrayw(szi)%enkinj*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%tauji = arrayw(szi)%tauji*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%tauai = arrayw(szi)%tauai*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%taua0i = arrayw(szi)%taua0i*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%tauj_di = arrayw(szi)%tauj_di*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%taua_di = arrayw(szi)%taua_di*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%taua0_di = arrayw(szi)%taua0_di*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%tauti = arrayw(szi)%tauti*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%lxt = arrayw(szi)%lxt*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%pdva = arrayw(szi)%pdva*3.086e20*3.086e20*3.086e20
-            arrayw(szi)%mdva = arrayw(szi)%mdva*rho_0a*3.086e20*3.086e20*3.086e20
+            arrayw(szi)%epsci = arrayw(szi)%epsci*(c**2)
+            arrayw(szi)%volsi =  arrayw(szi)%volsi*R_b**3
+            arrayw(szi)%massac = arrayw(szi)%massac*R_b**3
+            arrayw(szi)%volcoi = arrayw(szi)%volcoi*R_b**3
+            arrayw(szi)%enintcoi = arrayw(szi)%enintcoi*R_b**3
+            arrayw(szi)%massacoi = arrayw(szi)%massacoi*R_b**3
+            arrayw(szi)%npcoi = arrayw(szi)%npcoi*R_b**3
+            arrayw(szi)%pdvcoi = arrayw(szi)%pdvcoi*R_b**3
+            arrayw(szi)%entcoi = arrayw(szi)%entcoi*R_b**3
+            arrayw(szi)%pdva2i = arrayw(szi)%pdva2i*R_b**3
+            arrayw(szi)%mass2 = arrayw(szi)%mass2*R_b**3
+            arrayw(szi)%entpt = arrayw(szi)%entpt*R_b**3
+            arrayw(szi)%epota = arrayw(szi)%epota*R_b**3
+            arrayw(szi)%eninta = arrayw(szi)%eninta*R_b**3
+            arrayw(szi)%eninta0 = arrayw(szi)%eninta0*R_b**3
+            arrayw(szi)%enkina = arrayw(szi)%enkina*R_b**3
+            arrayw(szi)%enintj = arrayw(szi)%enintj*R_b**3
+            arrayw(szi)%enkinj = arrayw(szi)%enkinj*R_b**3
+            arrayw(szi)%tauji = arrayw(szi)%tauji*R_b**3
+            arrayw(szi)%tauai = arrayw(szi)%tauai*R_b**3
+            arrayw(szi)%taua0i = arrayw(szi)%taua0i*R_b**3
+            arrayw(szi)%tauj_di = arrayw(szi)%tauj_di*R_b**3
+            arrayw(szi)%taua_di = arrayw(szi)%taua_di*R_b**3
+            arrayw(szi)%taua0_di = arrayw(szi)%taua0_di*R_b**3
+            arrayw(szi)%tauti = arrayw(szi)%tauti*R_b**3
+            arrayw(szi)%lxt = arrayw(szi)%lxt*R_b**3
+            arrayw(szi)%pdva = arrayw(szi)%pdva*R_b**3
+            arrayw(szi)%mdva = arrayw(szi)%mdva*rho_0a*R_b**3
                     
             if (szi .gt. 1) then
                arrayw(szi)%pdva  = arrayw(szi-1)%pdva + arrayw(szi)%pdva
@@ -1378,24 +1422,22 @@
             endif
                            
             arrayw(szi)%vol = arrayw(szi)%volsi+arrayw(szi)%volcoi
-            arrayw(szi)%timep=timej
-            arrayw(szi)%hpos=shpos(szi)
-            arrayw(szi)%phe = ph(szi)
-
-            csa=2.3e-3
+            arrayw(szi)%timep = timej*R_b/c
+            arrayw(szi)%hpos = shpos(szi)
+            arrayw(szi)%phe = ph(szi)*(c**2)*rho_0a
 
             if (szi > 1) then
-               arrayw(szi)%vh=(arrayw(szi)%hpos-arrayw(szi-1)%hpos)/  & 
-                              (arrayw(szi)%timep-arrayw(szi-1)%timep)
+               arrayw(szi)%vh=(arrayw(szi)%hpos*1e3*pc-arrayw(szi-1)%hpos*1e3*pc)/  & 
+                              (arrayw(szi)%timep-arrayw(szi-1)%timep)/c
             else
-               arrayw(szi)%vh = arrayw(szi)%hpos/arrayw(szi)%timep
+               arrayw(szi)%vh = arrayw(szi)%hpos*1e3*pc/arrayw(szi)%timep/c
             endif
 
             arrayw(szi)%machh=arrayw(szi)%vh/csa
 
             print*,'-------------------------------------------------------------------------------'
-            print*,'Time, velocity and position of the shock front: ',arrayw(szi)%timep*3.08e20/3.e10/3.15e7,arrayw(szi)%vh,arrayw(szi)%hpos
-            print*,'Shock position in the x and potential value: ',arrayw(szi)%tpos,arrayw(szi)%phe 
+            print*,'Time [Myr] and h-t positions [kpc] of the shock front: ',arrayw(szi)%timep/(365*24*3600*1e6),arrayw(szi)%hpos,arrayw(szi)%tpos
+            print*,'Shock head velocity [c] and pressure [cgs] value: ',arrayw(szi)%vh,arrayw(szi)%phe 
             print*,'Cocoon pressure, density and temperature: ',arrayw(szi)%press_co,arrayw(szi)%rho_co,arrayw(szi)%tem_co
             print*,'Cocoon internal energy and adiabatic index: ',arrayw(szi)%epsci,arrayw(szi)%gamci
             print*,'Shocked region pressure, density y temperature: ',arrayw(szi)%press_s,arrayw(szi)%rho_s,arrayw(szi)%tem_s
@@ -1414,7 +1456,10 @@
 
             ! Write analysis results in file
             if (sziw >= 2) then
-               open(40, file='results'//basenm,form='unformatted') 
+               print*,''
+               print*,'WRITING RESULTS IN FILE ', TRIM(path_output)//'/'//'results_'//basenm
+               print*,''
+               open(40, file=TRIM(path_output)//'/'//'results_'//basenm,form='unformatted') 
                write(40) sz     !,ny0,massaof,enintaof,entpaof
                write(40) (yzn(ii), ii=1,ny0)
                write(40) (arrayw(jj)%timep,arrayw(jj)%vh,arrayw(jj)%phe,        &
@@ -1447,11 +1492,15 @@
          count_frames = count_frames + 1
          number = number + 1
          rst_file = r_filer
+
     ENDDO
 
       ! Write analysis results in file
       if (cartrank == 0) then
-         open(40, file='results'//basenm//'_0',form='unformatted') 
+         print*,''
+         print*,'WRITING RESULTS IN FILE ', TRIM(path_output)//'/'//'results_'//basenm//'_0'
+         print*,''
+         open(40, file=TRIM(path_output)//'/'//'results_'//basenm//'_0',form='unformatted') 
          write(40) sz           !,ny0,massaof,enintaof,entpaof
          write(40) (arrayw(jj)%timep,arrayw(jj)%vh, arrayw(jj)%phe,       &
                     arrayw(jj)%machh,arrayw(jj)%hpos,arrayw(jj)%tpos,     &
@@ -1477,13 +1526,13 @@
 
       print*, 'Data saved in files ', 'results'//basenm
 
-     deallocate( xznl, xzn, xznr,        &
-                  yznl, yzn, yznr,        &
-                  zznl, zzn, zznr,        &
-                  grav, rhoa,             &
-                  pa, dpady, intarrayx,   &
-                  intarrayz, intarrayy, arrayt,    &
-                  arrayg )
+      deallocate( xznl, xzn, xznr,        &
+                     yznl, yzn, yznr,        &
+                     zznl, zzn, zznr,        &
+                     grav, rhoa,             &
+                     pa, dpady, intarrayx,   &
+                     intarrayz, intarrayy, arrayt,    &
+                     arrayg )
       deallocate( disp, dispco, kk2 )
       deallocate(tem, gam, hr, lof, phs, rhoa2, tema,  &
                presa2, epsa2, epsa, gama, gama2 )

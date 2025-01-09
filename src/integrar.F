@@ -1,4 +1,26 @@
-  SUBROUTINE INTEGRAR(nx,nz,kk,nvar,erro,h1,hmin,nok,nbad, &
+!===============================================================================
+!                                                                                
+! NAME:                                                                          
+!                   -------- MUSSOL v2: PARALELO --------                     
+!                                                                                
+! AUTHOR:
+!       Dr. Manel Perucho Pla
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! MODIFICATIONS:                                                                 
+!       Kiara Hervella Seoane
+!       Astronomy and Astrophysics Department, University of Valencia
+!       46100, Burjassot (Valencia)
+!
+! DESCRIPTION:
+!
+! ACADEMIC REFERENCE:
+!       Academic references in subroutines.
+!
+!===============================================================================
+
+   SUBROUTINE INTEGRAR(nx,nz,kk,nvar,erro,h1,hmin,nok,nbad, &
                           xznl, intarrayx, intarrayz)
 
 

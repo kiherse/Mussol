@@ -6,8 +6,8 @@
 #SBATCH --ntasks=$4                                                                                                                 
 #SBATCH --cpus-per-task=$5                                                                                                           
 #SBATCH --tasks-per-node=$6 
-#SBATCH --qos=thin_astro                                                                                                        
-#SBATCH --time=48:00:00                                                                                               
+#SBATCH --qos=thin_astro                                                                                                    
+#SBATCH --time=10:00:00                                                                                               
 
 outRoot="/storage/scratch/lv72/lv72805/BSC/J3C1_145/out/"
 path_wkd="/home/lv72/lv72805/Analysis/config/J3C1/1e45"
@@ -32,7 +32,7 @@ make clean
 make
 
 #date 
-time /usr/bin/srun ./RATPENAT $outRoot $path_wkd $1 $2 $3 > ${path_output}/out_${SLURM_JOB_ID}_$4_$5.dat
+time /usr/bin/srun ./RATPENAT $outRoot $path_wkd $path_output $1 $2 $3 > ${path_output}/out_${SLURM_JOB_ID}_$4_$5.dat
 #date
 
 
