@@ -78,8 +78,7 @@ MAIN_EXE := RATPENAT
 FFLAGS+= -J $(BINDIR)
 
 # CREATE OBJECTS
-MODULE_SRC := $(foreach file,$(MODULE_SRC),$(SRCDIR)/$(file))
-MODULE_OBJ := $(patsubst %,$(BINDIR)/%,$(notdir $(MODULE_SRC:.F=.o)))
+MODULE_OBJ := $(addprefix $(BINDIR)/,$(MODULE_SRC:.F=.o))
 
 ifneq ($(BINDIR),)
 $(shell test -d $(BINDIR) || mkdir -p $(BINDIR))
@@ -95,10 +94,6 @@ $(BINDIR)/%.o $(BINDIR)/%.mod : %.F $(HEADERS)
 
 ################################################################################
 clean:
-	rm -rf *.bck
-	rm -rf *.lst
-	rm -rf *.o
-	rm -rf *.mod
-	rm -rf *.f
-	rm -rf *.err *.out
+	rm -rf $(BINDIR)/*.o
+	rm -rf $(BINDIR)/*.mod
 	rm -rf RATPENAT

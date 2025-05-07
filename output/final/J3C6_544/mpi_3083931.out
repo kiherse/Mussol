@@ -1,0 +1,8 @@
+rm -rf *.bck
+rm -rf *.lst
+rm -rf *.o
+rm -rf *.mod
+rm -rf *.f
+rm -rf *.err *.out
+rm -rf RATPENAT
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin bin/modulos.o bin/mussol.o bin/integrar.o bin/paralelo.o bin/rst_hdf5.o bin/input.o -o RATPENAT

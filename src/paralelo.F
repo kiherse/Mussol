@@ -46,7 +46,6 @@ subroutine omp_init
          call ERROR( 'OMP_INIT', 'Allocation of OCURX, OCURY, OCURZ', __FILE__, __LINE__  )
       endif
 
-
 return
 !--------------------------------------------------------------------------- END
 END subroutine omp_init

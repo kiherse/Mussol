@@ -1,0 +1,30 @@
+free(): invalid next size (normal)
+
+Program received signal SIGABRT: Process abort signal.
+
+Backtrace for this error:
+#0  0x7f3dd4dcdacf in ???
+#1  0x7f3dd4dcda4f in ???
+#2  0x7f3dd4da0db4 in ???
+#3  0x7f3dd4e10056 in ???
+#4  0x7f3dd4e171bb in ???
+#5  0x7f3dd4e18dfb in ???
+#6  0x40f7dc in ???
+#7  0x405e4c in ???
+#8  0x7f3dd4db9ca2 in ???
+#9  0x405e8d in ???
+#10  0xffffffffffffffff in ???
+srun: error: a017: task 0: Aborted (core dumped)
+srun: Terminating job step 3083906.0
+srun: error: a024: task 7: Terminated
+srun: error: a023: task 6: Terminated
+srun: error: a020: task 3: Terminated
+srun: error: a022: task 5: Terminated
+srun: error: a021: task 4: Terminated
+srun: error: a018: task 1: Terminated
+srun: error: a019: task 2: Terminated
+srun: Force Terminated job step 3083906.0
+
+real	1m41,209s
+user	0m0,009s
+sys	0m0,012s

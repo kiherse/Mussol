@@ -3,7 +3,7 @@ second
 third                                                                
 basenm  ,J3C3
 rst_file, 0
-rst_rec , 0
+rst_rec , 1
 xd      , .5
 alpha   , 45.0
 nend    , 100000000 

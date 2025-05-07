@@ -1,0 +1,19 @@
+free(): invalid next size (normal)
+
+Program received signal SIGABRT: Process abort signal.
+
+Backtrace for this error:
+#0  0x7f7f94e56acf in ???
+#1  0x7f7f94e56a4f in ???
+#2  0x7f7f94e29db4 in ???
+#3  0x7f7f94e99056 in ???
+#4  0x7f7f94ea01bb in ???
+#5  0x7f7f94ea1dfb in ???
+#6  0x40fa3a in ???
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 3176115.0 ON a017 CANCELLED AT 2025-03-22T03:02:41 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 3176115 ON a017 CANCELLED AT 2025-03-22T03:02:41 DUE TO TIME LIMIT ***
+srun: error: a023: task 6: Terminated
+srun: Terminating job step 3176115.0
+srun: error: a018: task 1: Terminated
+srun: error: a022: task 5: Terminated

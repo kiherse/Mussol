@@ -1,0 +1,177 @@
+ 
+ MUSSOL: analisying results of simulation J3C3
+ 
+ 
+ Reading initial ambient data
+ 
+ [rst_hdf5] Restarting from /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3IAA-00000.h5
+ [rst_hdf5] Record            1
+ [rst_hdf5] At iteration            0
+ [rst_hdf5] Time =    0.0000000000000000     
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+ Closing file /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3IAA-00000.h5
+ 
+ =======================================            0  ======================================
+ 
+ [rst_hdf5] Restarting from /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3RAA-00000.h5
+ [rst_hdf5] Record            1
+ [rst_hdf5] At iteration          627
+ [rst_hdf5] Time =    100.04072786130753     
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+ Closing file /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3RAA-00000.h5
+ Energy injected by the jet in each node (en_inja)   5.8952742188178014E-006   5.8952742188178014E-006   0.0000000000000000        0.0000000000000000        7.6638564844631412E-006   7.6638564844631412E-006   0.0000000000000000        0.0000000000000000     
+ Total energy injected at this time (en_inj)   3.2332894207853954E+023 in szi           0
+ 
+ Node, shock position and pressure: 
+ -----------------------------------
+ Node, Shock positions and pressures
+           1   2.8750000000000000        3.3750000000000000        1.6433114979342958E-005
+           2   2.8750000000000000        3.3750000000000000        1.6323101601004339E-005
+           3   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+           4   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+           5   2.8750000000000000        3.3750000000000000        1.6337425056736431E-005
+           6   2.8750000000000000        3.3750000000000000        1.6215308583453349E-005
+           7   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+           8   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+ 
+ ------------------------------ JET PARAMETERS ---------------------------------
+ Time [Myr] and h-t positions [kpc] of the shock front:   0.16316758968437892        1.4375000000000000        1.6875000000000000     
+ Shock head velocity [c] and Mach number:    2.8738295506863819E-002   12.494910812681560     
+ Shock head pressure [cgs] value:    2.4703277193465404E-009
+ Jet total mass:    0.0000000000000000     
+ 
+ ----------------------------- Jet region --------------------------------------
+ ------------------------- (pres >= 1.2*pres_0) ----------------------------------
+ Internal and kinetic energy due to jet particles:    7.8531929206363870E+055   5.2462403695262769E+055
+ Internal and kinetic energy due to ambient particles:    3.2136667127440843E+056   3.7382907496967120E+056
+ Entropy due to jet particles:    0.0000000000000000     
+ Pressure-volume work and mass-volume:    2.5786420092123771E+058   1.3135285454407537E+031
+ Luminosity:    7.8531929206363870E+055
+ Entropy due to ambient particles:    99399053462429.594     
+ Stress-tensor components:    0.0000000000000000        2.5563891425677881E+058   1.4900792026145499E+060
+ Stress-tensor components:    2.5563891425677881E+058   1.4904533896725868E+060   7.8531929206363870E+055
+ Stress-tensor components:    2.5938078483714652E+058
+ Volume (cocoon+shell):    2.5814539147110058E+065
+ 
+ -------------------------------- Cocoon ---------------------------------------
+ ---------------------------- (tracer >= 0.01) ---------------------------------
+ Pressure, density and temperature:    1.1738639983435047E-005   1.8467312590172365E-014   0.0000000000000000     
+ Initial specific internal energy and adiabatic index:    0.0000000000000000        0.0000000000000000     
+ Mass acretted from the ambient and total:    0.0000000000000000        0.0000000000000000     
+ --------------------------- (tracer >= 1.e-4) ---------------------------------
+ Total energies for external particles and jet particles:    0.0000000000000000        0.0000000000000000     
+ Pressure-volume work with and without tracer:    0.0000000000000000        0.0000000000000000     
+ Number of particles:    0.0000000000000000     
+ Final and initial mass:    0.0000000000000000        0.0000000000000000     
+ Volume:    1.2907269573555029E+065
+ Cell count:    0.0000000000000000     
+ ----------------------------- Shell/shocked -----------------------------------
+ ---------------------------- (tracer < 0.01) ----------------------------------
+ Pressure, density y temperature:    1.7240568594136309E-009   1.5673519198913100E-026   110410519055.49339     
+ Internal and kinectic energy:    3.2136667127440843E+056   3.7382907496967120E+056
+ Entropy:    0.0000000000000000     
+ Mass acretted from the ambient:    1.6858181880030022E+039   1.6858181880030022E+039
+ Volume:    1.2907269573555029E+065
+ Cell count:    855.00000000000000     
+ ================================================================================
+ 
+ 
+ =======================================          127  ======================================
+ 
+ [rst_hdf5] Restarting from /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3RAA-00127.h5
+ [rst_hdf5] Record            1
+ [rst_hdf5] At iteration       201429
+ [rst_hdf5] Time =    12804.011869324910     
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+                  768                  512                  768         768         768         512
+ Closing file /storage/scratch/lv72/lv72805/BSC/J3C3_544/out/J3C3RAA-00127.h5
+ Energy injected by the jet in each node (en_inja)   7.6638564844631412E-006   7.6638564844631412E-006   0.0000000000000000        0.0000000000000000        7.6638564844631412E-006   7.6638564844631412E-006   0.0000000000000000        0.0000000000000000     
+ Total energy injected at this time (en_inj)   3.6550228234965351E+023 in szi         127
+ 
+ Node, shock position and pressure: 
+ Data saved in files resultsJ3C3
+ Data saved in files resultsJ3C3
+ Data saved in files resultsJ3C3
+ Data saved in files resultsJ3C3
+ Data saved in files resultsJ3C3
+ Data saved in files resultsJ3C3
+ -----------------------------------
+ Node, Shock positions and pressures
+           1   0.0000000000000000        11.875000000000000        0.0000000000000000     
+           2   0.0000000000000000        13.875000000000000        0.0000000000000000     
+           3   96.875000000000000        0.0000000000000000        2.2590219564989540E-006
+           4   0.0000000000000000        0.0000000000000000        0.0000000000000000     
+           5   0.0000000000000000        30.375000000000000        0.0000000000000000     
+           6   0.0000000000000000        14.125000000000000        0.0000000000000000     
+           7   96.375000000000000        0.0000000000000000        2.2656391289482030E-006
+           8   91.375000000000000        0.0000000000000000        2.3308582890507498E-006
+ 
+ ------------------------------ JET PARAMETERS ---------------------------------
+ Time [Myr] and h-t positions [kpc] of the shock front:    20.883492150360073        48.437500000000000        15.187500000000000     
+ Shock head velocity [c] and Mach number:    7.5659879878811551E-003   3.2895599217363500     
+ Shock head pressure [cgs] value:    3.3959018510895526E-010
+ Jet total mass:    9.1200491064697949E+035
+ 
+ ----------------------------- Jet region --------------------------------------
+ ------------------------- (pres >= 1.2*pres_0) ----------------------------------
+ Internal and kinetic energy due to jet particles:    2.6276333879967155E+055   1.4666111048133222E+054
+ Internal and kinetic energy due to ambient particles:    8.3907443697789375E+057   4.4554078173060857E+056
+ Entropy due to jet particles:    857422056.55430698     
+ Pressure-volume work and mass-volume:    2.6993759537499676E+058   5.9824285843631104E+017
+ Luminosity:    2.7604894804529310E+042
+ Entropy due to ambient particles:    14326662547.490862     
+ Stress-tensor components:    1.0981776211893990E+056   5.2508022004019284E+062   3.2146231714482762E+063
+ Stress-tensor components:    4.3019693242276282E+055   8.8426344973650177E+057   3.2331406322334026E+058
+ Stress-tensor components:    5.2508032985795484E+062
+ Volume (cocoon+shell):    9.8025527733403410E+067
+ 
+ -------------------------------- Cocoon ---------------------------------------
+ ---------------------------- (tracer >= 0.01) ---------------------------------
+ Pressure, density and temperature:    4.8665291398799377E-010   1.2417717503066572E-029   18410012811.670597     
+ Initial specific internal energy and adiabatic index:    43714893389672776.        1.6522627927201141     
+ Mass acretted from the ambient and total:    1.7945831713281823E+036   1.7945831713281823E+036
+ --------------------------- (tracer >= 1.e-4) ---------------------------------
+ Total energies for external particles and jet particles:    1.5626377185692987E+056   2.7683494140623705E+055
+ Pressure-volume work with and without tracer:    1.3137330467829699E+056   9.8936236385029206E+054
+ Number of particles:    1.1968553200157066E+062
+ Final and initial mass:    1.7835162352921580E+037   3.8257370733132246E+039
+ Volume:    1.4837917530185330E+065
+ Cell count:    740.00000000000000     
+ ----------------------------- Shell/shocked -----------------------------------
+ ---------------------------- (tracer < 0.01) ----------------------------------
+ Pressure, density y temperature:    2.7505450226191255E-010   4.2511791066752692E-026   65362083.516969830     
+ Internal and kinectic energy:    8.3907443697789375E+057   4.4554078173060857E+056
+ Entropy:    1.4401790981883017E+078
+ Mass acretted from the ambient:    4.1609328654250482E+042   4.1609347322422088E+042
+ Volume:    9.7877148558101551E+067
+ Cell count:    255423.00000000000     
+ ================================================================================
+ 
+ 
+ WRITING RESULTS IN FILE /home/lv72/lv72805/Analysis/output/J3C3_544/results_J3C3
+ 
+ Data saved in files resultsJ3C3
+ 
+ WRITING RESULTS IN FILE /home/lv72/lv72805/Analysis/output/J3C3_544/results_J3C3_0
+ 
+ Data saved in files resultsJ3C3

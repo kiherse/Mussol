@@ -35,6 +35,7 @@
       small, smlrho, smallp, smallu,                    &
       gridlx, gridlx2, gridlz, gridlz2, gridly,         &
       epsiln, omg1, omg2, freqpl)
+
       USE parallel
       USE constantes
       USE workarrays
