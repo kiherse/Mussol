@@ -9,7 +9,7 @@
 #SBATCH --time=00:30:00 
 # #SBATCH --partition=genoa_s 
 # #SBATCH --qos=hera
-#SBATCH --qos=thin_astro     
+#SBATCH --qos=thin_astro
 
 outRoot="/storage/scratch/lv72/lv72805/BSC/J3C3_144/out/"
 path_wkd="/home/lv72/lv72805/Analysis/config/J3C3/1e44"

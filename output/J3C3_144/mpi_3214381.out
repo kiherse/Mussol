@@ -1,0 +1,10 @@
+rm -rf bin/*.o
+rm -rf bin/*.mod
+rm -rf RATPENAT
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/modulos.o src/modulos.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/mussol.o src/mussol.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/integrar.o src/integrar.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/paralelo.o src/paralelo.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/rst_hdf5.o src/rst_hdf5.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin -c -o bin/input.o src/input.F
+h5pfc -ffree-form -ffree-line-length-170 -m64 -march=native -fimplicit-none -O3  -fopenmp -free  -DOPENMP -DHDF -DPARALELO -DCASERO  -J bin bin/modulos.o bin/mussol.o bin/integrar.o bin/paralelo.o bin/rst_hdf5.o bin/input.o -o RATPENAT

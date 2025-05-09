@@ -500,8 +500,8 @@
          enddo
       enddo
 
-   !$OMP END DO
-   !$OMP END PARALLEL
+!$OMP END DO
+!$OMP END PARALLEL
 
       !------------------------------------------------------- Jet evolution
 
